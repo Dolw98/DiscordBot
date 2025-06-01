@@ -1,17 +1,19 @@
 import os
 import discord
 from discord.ext import commands
+from discord.ui import View, Select
 from googletrans import Translator
 
-# Initialiseer intents en bot
+# -------------------------------
+# DISCORD BOT INSTELLINGEN
+# -------------------------------
+
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
-
-# Initialiseer vertaler
 translator = Translator()
 
-# Ondersteunde talen
+# Taalkeuzes
 LANGUAGES = {
     "🇬🇧 English": "en",
     "🇵🇹 Português": "pt",
@@ -23,21 +25,28 @@ LANGUAGES = {
     "🇩🇪 Deutsch": "de",
 }
 
-# View en dropdown voor vertaling
-class TranslateDropdown(discord.ui.Select):
+# Dropdown menu voor vertaling
+class TranslateDropdown(Select):
     def __init__(self, message_content):
         self.message_content = message_content
         options = [
             discord.SelectOption(label=label, value=lang_code)
             for label, lang_code in LANGUAGES.items()
         ]
-        super().__init__(placeholder="🌍 Kies taal...", min_values=1, max_values=1, options=options)
+        super().__init__(
+            placeholder="🌍 Choose language...",
+            min_values=1,
+            max_values=1,
+            options=options
+        )
 
     async def callback(self, interaction: discord.Interaction):
         lang_code = self.values[0]
         try:
             label = next(k for k, v in LANGUAGES.items() if v == lang_code)
-            translated = await bot.loop.run_in_executor(None, lambda: translator.translate(self.message_content, dest=lang_code))
+            translated = await bot.loop.run_in_executor(
+                None, lambda: translator.translate(self.message_content, dest=lang_code)
+            )
             await interaction.response.send_message(
                 f"{label} → {translated.text}", ephemeral=True
             )
@@ -46,12 +55,12 @@ class TranslateDropdown(discord.ui.Select):
                 f"❌ Fout bij vertalen: {e}", ephemeral=True
             )
 
-class TranslateView(discord.ui.View):
+# View met dropdown
+class TranslateView(View):
     def __init__(self, message_content):
         super().__init__(timeout=None)
         self.add_item(TranslateDropdown(message_content))
 
-# Event handlers
 @bot.event
 async def on_ready():
     print(f"✅ Bot actief als {bot.user}")
@@ -64,6 +73,7 @@ async def on_message(message):
     await message.channel.send(view=view)
     await bot.process_commands(message)
 
-# Start de bot
+# -------------------------------
+# START DE BOT
+# -------------------------------
 bot.run(os.getenv("DISCORD_TOKEN"))
-
