@@ -5,7 +5,7 @@ from discord.ui import View, Select
 from googletrans import Translator
 
 # -------------------------------
-# DISCORD BOT INSTELLINGEN
+# DISCORD BOT SETTINGS
 # -------------------------------
 
 intents = discord.Intents.default()
@@ -13,7 +13,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 translator = Translator()
 
-# Taalkeuzes
+# Language options
 LANGUAGES = {
     "🇬🇧 English": "en",
     "🇵🇹 Português": "pt",
@@ -23,9 +23,12 @@ LANGUAGES = {
     "🇪🇸 Español": "es",
     "🇫🇷 Français": "fr",
     "🇩🇪 Deutsch": "de",
+    "🇹🇷 Türkçe": "tr",
+    "🇹🇭 ไทย": "th",
+    "🇨🇳 简体中文": "zh-CN",
 }
 
-# Dropdown menu voor vertaling
+# Dropdown menu for translation
 class TranslateDropdown(Select):
     def __init__(self, message_content):
         self.message_content = message_content
@@ -52,10 +55,10 @@ class TranslateDropdown(Select):
             )
         except Exception as e:
             await interaction.response.send_message(
-                f"❌ Fout bij vertalen: {e}", ephemeral=True
+                f"❌ Error during translation: {e}", ephemeral=True
             )
 
-# View met dropdown
+# View with dropdown
 class TranslateView(View):
     def __init__(self, message_content):
         super().__init__(timeout=None)
@@ -63,7 +66,7 @@ class TranslateView(View):
 
 @bot.event
 async def on_ready():
-    print(f"✅ Bot actief als {bot.user}")
+    print(f"✅ Bot active as {bot.user}")
 
 @bot.event
 async def on_message(message):
@@ -74,6 +77,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # -------------------------------
-# START DE BOT
+# START THE BOT
 # -------------------------------
 bot.run(os.getenv("DISCORD_TOKEN"))
