@@ -26,6 +26,7 @@ LANGUAGES = {
     "🇹🇷 Türkçe": "tr",
     "🇹🇭 ไทย": "th",
     "🇨🇳 简体中文": "zh-CN",
+    "🇮🇩 Bahasa Indonesia": "id",
 }
 
 # Dropdown menu for translation
